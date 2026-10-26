@@ -1,4 +1,5 @@
-﻿using Spectre.Console;
+﻿using FreudOS.Core;
+using Spectre.Console;
 using Spectre.Console.Rendering;
 
 // Эмуляция пространств имен наших систем (для компиляции в одном файле)
@@ -14,10 +15,14 @@ class Program
                 .Centered()
                 .Color(Color.Purple));
 
-        AnsiConsole.MarkupLine("[bold yellow]Инициализация мета-контекста психологических рантаймов...[/]");
+        AnsiConsole.MarkupLine("[bold yellow]Инициализация мета-контекста психологических рантаймов с поддержкой IDrive...[/]");
         Thread.Sleep(800);
 
-        // Инициализация заглушек состояний для демонстрации (имитируем наши классы)
+        // Инициализируем реальное низкоуровневое ядро Фрейда
+        var freudCore = new TripartitePsyche();
+        var random = new Random();
+
+        // Остальные рантаймы пока остаются в режиме эмуляции слепков состояния
         var horneySecurity = 75.0;
         var horneyVitality = 90.0;
         var horneyAlienation = 12.0;
@@ -30,30 +35,57 @@ class Program
         var adlerSocialInterest = 55.0;
         string adlerStyle = "SociallyUsefulStyle";
 
-        var freudLibido = 480.0;
-        var freudTension = 25.0;
-        var freudRepressedCount = 3;
+        string currentFreudLog = "Инициализация полиморфного пула Id...";
 
         // Создаем интерактивный Live-дисплей Spectre.Console
         AnsiConsole.Live(CreateDashboard(
             horneySecurity, horneyVitality, horneyAlienation,
             psycheLibidoEgo, psycheLibidoUnconscious, psycheShadowBuffer,
             adlerInferiority, adlerSocialInterest, adlerStyle,
-            freudLibido, freudTension, freudRepressedCount
+            freudCore, currentFreudLog
         )).Start(ctx =>
         {
-            // Демонстрация межсистемных триггеров:
-            // В цикле зашита простейшая логика: когда во FreudOS растет вытеснение, данные перетекают в PsycheOS(Тень),
-            // а падение безопасности в HorneyOS автоматически дестабилизирует AdlerOS, толкая ее в сверхкомпенсацию(RulingStyle).
-
             // Симуляция 50 системных тиков работы макро-психики
             for (int tick = 1; tick <= 50; tick++)
             {
                 Thread.Sleep(250); // Скорость системного тика
 
-                // ── ИЗМЕНЕНИЕ СОСТОЯНИЙ (Симуляция OnRuntimeTick) ──
+                try
+                {
+                    // ── 1. ВЫЧИСЛЕНИЯ FREUDOS (Реальное ядро с IDrive) ──
+                    freudCore.OnRuntimeTick();
+                    currentFreudLog = $"[grey]Тик {tick}:[/] Пассивное удержание импульсов.";
 
-                // HorneyOS: Растет налог на отчуждение, падает витальность и безопасность
+                    // Каждые 3 тика Id генерирует строго типизированное влечение
+                    if (tick % 3 == 0)
+                    {
+                        IDrive currentDrive = random.Next(100) > 45
+                            ? new ThanatosDrive()
+                            : new ErosDrive();
+
+                        var defense = random.Next(100) > 50
+                            ? DefenseMechanism.Repression
+                            : DefenseMechanism.Sublimation;
+
+                        freudCore.ProcessIdImpulse(currentDrive, defense, out currentFreudLog);
+                    }
+                }
+                catch (LibidoLeakException ex)
+                {
+                    currentFreudLog = $"[blink bold red]CRITICAL: {ex.Message}[/]";
+                    // Обновляем дашборд аварийным логом и прерываем симуляцию
+                    ctx.UpdateTarget(CreateDashboard(
+                        horneySecurity, horneyVitality, horneyAlienation,
+                        psycheLibidoEgo, psycheLibidoUnconscious, psycheShadowBuffer,
+                        adlerInferiority, adlerSocialInterest, adlerStyle,
+                        freudCore, currentFreudLog
+                    ));
+                    break;
+                }
+
+                // ── 2. ИЗМЕНЕНИЕ ЭМУЛИРУЕМЫХ СОСТОЯНИЙ (Каскадные триггеры) ──
+
+                // HorneyOS: Растет налог на отчуждение, падает витальность
                 horneyAlienation += 1.2;
                 horneyVitality = Math.Max(0, horneyVitality - (horneyAlienation * 0.05));
                 if (horneyAlienation > 35)
@@ -61,52 +93,47 @@ class Program
                     horneySecurity = Math.Max(0, horneySecurity - 1.5);
                 }
 
-                // FreudOS: Id давит, напряжение котла катексисов растет
-                freudTension += 1.8;
-                freudLibido -= (freudRepressedCount * 0.4);
-
-                // AdlerOS: При падении базальной безопасности Хорни, у Адлера растет индекс неполноценности
+                // AdlerOS: При дестабилизации безопасности Хорни — растет адлерианская неполноценность
                 if (horneySecurity < 65)
                 {
                     adlerInferiority = Math.Min(100, adlerInferiority + 2.0);
                     adlerStyle = "RulingStyle (Сверхкомпенсация)";
                 }
 
-                // PsycheOS: Аффекты перетекают в теневой буфер
-                if (freudTension > 60)
+                // PsycheOS: При росте напряжения у Фрейда, аффекты перетекают в тень Юнга
+                if (freudCore.GetTension() > 50)
                 {
-                    psycheLibidoUnconscious += 1.5;
-                    psycheLibidoEgo -= 1.5;
-                    if (tick % 5 == 0)
+                    psycheLibidoUnconscious += 1.2;
+                    psycheLibidoEgo -= 1.2;
+                    if (tick % 6 == 0)
                     {
                         psycheShadowBuffer += "Thanatos_Projected;";
                     }
                 }
 
-                // Перерисовываем интерфейс с новыми замороженными слепками данных
+                // Перерисовываем интерфейс с новыми динамическими данными
                 ctx.UpdateTarget(CreateDashboard(
                     horneySecurity, horneyVitality, horneyAlienation,
                     psycheLibidoEgo, psycheLibidoUnconscious, psycheShadowBuffer,
                     adlerInferiority, adlerSocialInterest, adlerStyle,
-                    freudLibido, freudTension, freudRepressedCount
+                    freudCore, currentFreudLog
                 ));
             }
         });
 
-        AnsiConsole.MarkupLine("\n[bold green]💾 Системный цикл завершен. Текущие слепки архитектур сохранены в постоянную память.[/]");
+        AnsiConsole.MarkupLine("\n[bold green]💾 Системный цикл завершен. Напряжение зафиксировано, слепки IDrive сохранены.[/]");
     }
 
     /// <summary>
     /// Фабрика макета дашборда. Собирает сетку панелей.
-    /// Исправляет потенциальные ошибки приведения типов (CS0311) через строгую изоляцию рендереров.
+    /// Использует реальный экземпляр TripartitePsyche для вывода метрик Фрейда.
     /// </summary>
     private static IRenderable CreateDashboard(
         double hSec, double hVit, double hAl,
         double pEgo, double pUnc, string pShadow,
         double aInf, double aSoc, string aStyle,
-        double fLib, double fTen, int fRepCount)
+        TripartitePsyche freud, string freudLog)
     {
-        // Главная сетка на 2 колонки
         var grid = new Grid().AddColumns(2);
 
         // 🌟 1. ПАНЕЛЬ HORNEYOS
@@ -115,7 +142,6 @@ class Program
         horneyTable.AddRow("Витальность Реального Я (_realSelfVitality)", $"[cyan]{hVit:F1} sp[/]");
         horneyTable.AddRow("Налог на отчуждение (_alienationEnergyCost)", $"[red]{hAl:F1} sp/tick[/]");
 
-        // Добавляем индикатор триггера гордости
         string horneyStatus = hAl > 50.0 ? "[blink red]Pride Блокировка![/]" : "[green]Разрешен дебаг[/]";
         horneyTable.AddRow("Статус Валидатора Гордости", horneyStatus);
 
@@ -140,7 +166,6 @@ class Program
         adlerTable.AddRow("Индекс неполноценности", $"[orange1]{aInf:F1}%[/]");
         adlerTable.AddRow("Социальный интерес", $"[green3]{aSoc:F1}%[/]");
 
-        // Использование встроенного расширения Spectre.Console для IRenderable
         var styleWidget = new Markup($"Текущий Стиль Жизни: [bold white]{aStyle}[/]").Justify(Justify.Left);
 
         var adlerRows = new Rows(adlerTable, styleWidget);
@@ -149,27 +174,36 @@ class Program
             .BorderColor(Color.Orange1)
             .Expand();
 
-        // 🩸 4. ПАНЕЛЬ FREUDOS
+        // 🩸 4. ПАНЕЛЬ FREUDOS (Честный рендеринг через переданный объект)
         var freudTable = new Table().NoBorder().AddColumns("Гидравлика", "Давление");
-        freudTable.AddRow("Общий пул либидо (_libidoPool)", $"[red3]{fLib:F1} cx[/]");
 
-        // Визуализация критического порога напряжения
-        string tensionColor = fTen > 75 ? "blink red" : fTen > 50 ? "yellow" : "green";
-        freudTable.AddRow("Напряжение катексиса (_cathexisTension)", $"[{tensionColor}]{fTen:F1}%[/]");
-        freudTable.AddRow("Вытесненные объекты Id в буфере", $"[red3]{fRepCount} шт.[/]");
+        string libidoColor = freud.GetLibido() < 150.0 ? "bold red" : "red3";
+        freudTable.AddRow("Общий пул либидо (_libidoPool)", $"[{libidoColor}]{freud.GetLibido():F1} cx[/]");
 
-        var freudPanel = new Panel(freudTable)
-            .Header("🩸 FreudOS Низкоуровневый Слой (Фрейд)")
+        double tension = freud.GetTension();
+        string tensionColor = tension > 80.0 ? "blink red" : tension > 50.0 ? "yellow" : "green";
+        freudTable.AddRow("Напряжение катексиса (_cathexisTension)", $"[{tensionColor}]{tension:F1}%[/]");
+        freudTable.AddRow("Вытесненные объекты IDrive в буфере", $"[maroon]{freud.GetRepressedCount()} объектов[/]");
+        freudTable.AddRow("Текущий налог на удержание", $"[grey50]{freud.GetRepressionCost():F1} cx/tick[/]");
+
+        // Объединяем таблицу Фрейда и лог обработки влечений IDrive
+        var freudContent = new Rows(
+            freudTable,
+            new Rule("[bold grey]Диспетчер Защит Эго (IDrive Log)[/]").Justify(Justify.Left),
+            new Markup(freudLog).Justify(Justify.Left)
+        );
+
+        var freudPanel = new Panel(freudContent)
+            .Header("🩸 FreudOS Низкоуровневый Слой (C# 13 Contract)")
             .BorderColor(Color.Red3)
             .Expand();
 
-        // Раскладываем панели по ячейкам сетки
+        // Собираем всё в сетку
         grid.AddRow(horneyPanel, psychePanel);
         grid.AddRow(adlerPanel, freudPanel);
 
-        // Возвращаем общую панель-контейнер
         return new Panel(grid)
-            .Header("📊 ПСИХОЛОГИЧЕСКИЙ РАНТАЙМ МАКРО-ПСИХИКИ (МОНИТОРИНГ)")
+            .Header("📊 ПСИХОЛОГИЧЕСКИЙ РАНТАЙМ МАКРО-ПСИХИКИ (МОНИТОРИНГ IDRIVE)")
             .BorderColor(Color.Grey)
             .Padding(1, 1, 1, 1);
     }
