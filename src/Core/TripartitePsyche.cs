@@ -5,7 +5,19 @@ public class TripartitePsyche
     private double _libidoPool = 500.0;
     private double _cathexisTension = 15.0;
     private double _repressionCost = 2.0;
+
     private readonly List<IDrive> _repressedBuffer = new(); // Теперь хранит строго типизированные влечения
+
+    public TripartitePsyche()
+    {
+        
+    }
+
+    public TripartitePsyche(double freudInitialLibido, double freudInitialTension)
+    {
+        _libidoPool = freudInitialLibido;
+        _cathexisTension = freudInitialTension;
+    }
 
     public void OnRuntimeTick()
     {
