@@ -1,4 +1,4 @@
-﻿using FreudOS.PsycheOS;
+﻿using FreudOS.Core;
 
 namespace FreudOS.AdlerOS;
 
@@ -6,9 +6,9 @@ public class AdlerianMind
 {
     public double InferiorityIndex { get; private set; }
     public double SocialInterest { get; private set; }
-    public AdlerStyle CurrentStyle { get; private set; }
+    public AdlerLifeStyle CurrentStyle { get; private set; }
 
-    public AdlerianMind(double inferiorityIndex, double socialInterest, AdlerStyle currentStyle = AdlerStyle.SociallyUseful)
+    public AdlerianMind(double inferiorityIndex, double socialInterest, AdlerLifeStyle currentStyle = AdlerLifeStyle.SociallyUseful)
     {
         InferiorityIndex = inferiorityIndex;
         SocialInterest = socialInterest;
@@ -21,7 +21,7 @@ public class AdlerianMind
             {
                 InferiorityIndex = Math.Min(100.0, InferiorityIndex + 4.0);
                 SocialInterest = Math.Max(0.0, SocialInterest - 1.5);
-                CurrentStyle = AdlerStyle.Ruling;
+                CurrentStyle = AdlerLifeStyle.Ruling;
             }
         });
     }

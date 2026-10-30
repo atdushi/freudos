@@ -1,4 +1,4 @@
-﻿namespace FreudOS.Core;
+﻿namespace FreudOS.Core.Drive;
 
 /// <summary>
 /// Строго типизированный интерфейс влечения Id.

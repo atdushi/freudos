@@ -1,4 +1,4 @@
-﻿namespace FreudOS.Core;
+﻿namespace FreudOS.Core.Drive;
 
 /// <summary>
 /// Категория влечения по Фрейду.

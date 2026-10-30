@@ -1,4 +1,4 @@
-﻿using FreudOS.PsycheOS;
+﻿using FreudOS.Core;
 
 namespace FreudOS.HorneyOS;
 

@@ -1,4 +1,4 @@
-﻿namespace FreudOS.PsycheOS;
+﻿namespace FreudOS.Core;
 
 /// <summary>
 /// Маркерный интерфейс для всех ментальных событий шины.
@@ -7,7 +7,7 @@ public interface IPsychicEvent { }
 
 #region ── КОНТРАКТЫ КРОСС-СИСТЕМНЫХ СОБЫТИЙ ──
 
-public record IdImpulseRepressedEvent(string Label, double EnergyCost, Core.DriveType DriveType) : IPsychicEvent;
+public record IdImpulseRepressedEvent(string Label, double EnergyCost, Drive.DriveType DriveType) : IPsychicEvent;
 
 public record SecurityDroppedEvent(double CurrentSecurity) : IPsychicEvent;
 

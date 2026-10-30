@@ -1,5 +1,6 @@
-﻿using FreudOS.HorneyOS;
-using FreudOS.PsycheOS;
+﻿using FreudOS.Core;
+using FreudOS.HorneyOS;
+using FreudOS.Jung;
 using Spectre.Console;
 using System.Reflection;
 
@@ -12,7 +13,7 @@ public class Psychoanalyst
     /// <summary>
     /// Производит сессию интервенции в реактивное ядро Юнга.
     /// </summary>
-    public void PerformReflectionTherapy(IndividualMind psycheCore, HorneyMind horneyCore, int currentPulse)
+    public void PerformReflectionTherapy(JungMind psycheCore, HorneyMind horneyCore, int currentPulse)
     {
         AnsiConsole.MarkupLine($"\n[bold magenta][[Analyst]][/] Инициализация Reflection-интервенции на пульсе {currentPulse}...");
 

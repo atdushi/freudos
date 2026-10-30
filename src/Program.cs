@@ -1,9 +1,10 @@
 ﻿using Spectre.Console;
 using Spectre.Console.Rendering;
-using FreudOS.PsycheOS;
+using FreudOS.Jung;
 using FreudOS.AdlerOS;
 using FreudOS.Core;
 using FreudOS.HorneyOS;
+using FreudOS.Core.Drive;
 
 namespace FreudOS.Dashboard;
 
@@ -22,17 +23,24 @@ namespace FreudOS.Dashboard;
 ⚡ Этап 3. Реактивный взрыв подписок (Subscribe)
 
 Шина данных мгновенно транслирует пакет трем независимым рантаймам-слушателям:
-1. 🌑 Юнг (PsycheOS): Ловит импульс. Либидо сознательного Эго тут же совершает гидравлический сдвиг и перетекает в Бессознательное. Сигнал улетает в архетипические комплексы: FatherComplex видит Thanatos и выбрасывает аффект вины, а MotherComplex уводит Эго в глубокую регрессию. Все слепки оседают в буфере Тони (ShadowDesires).
+1. 🌑 Юнг (JungOS): Ловит импульс. Либидо сознательного Эго тут же совершает гидравлический сдвиг и перетекает в Бессознательное. Сигнал улетает в архетипические комплексы: FatherComplex видит Thanatos и выбрасывает аффект вины, а MotherComplex уводит Эго в глубокую регрессию. Все слепки оседают в буфере Тони (ShadowDesires).
 2. 🌟 Хорни (HorneyOS): Ловит этот же импульс. Система воспринимает скрытый прорыв бессознательного как угрозу целостности. ShouldsTyrannyDecorator принудительно задирает налог на отчуждение (_alienationEnergyCost), выжигая витальность Реального Я. Безопасность системы падает. Если она падает ниже 65%, Хорни генерирует свое собственное событие в эфир — SecurityDroppedEvent.
 3. 📉 Адлер (AdlerOS): Сидит в режиме ожидания. На импульсы Фрейда он не подписан, но он чутко слушает сигналы от Хорни. Как только в шине пролетает пакет SecurityDroppedEvent, Адлер понимает: базальная опора системы уничтожена. Включается механизм сверхкомпенсации: индекс неполноценности (_inferiorityIndex) взлетает, а паттерн Strategy на лету переключает жизненный стиль в агрессивный RulingStyle.
 
- */
+🩺 Особый контур: Интервенция Аналитика (Psychoanalyst.cs)
+
+Аналитик работает как внешний контролирующий скрипт (Reflection-дебаггер).
+• Мониторинг: На каждом ударе пульса программа проверяет размер буфера Тени у Юнга.
+• Прорыв инкапсуляции: Если Тень раздувается (больше 5 элементов), аналитик активирует терапию. Через механизмы System.Reflection он взламывает приватное поле Юнга, принудительно очищает Тень (.Clear()) и возвращает Эго-Либидо к стабильному значению.
+• Блокировка (Гордость): Если Хорни на данном шаге накопила слишком высокий «налог на отчуждение» (система находится в состоянии жесткой психологической защиты), терапия блокируется. Аналитик натыкается на стену сопротивления, и симуляция продолжается в критическом режиме.
+
+*/
 
 class Program
 {
     // Глобальные стейты систем, обновляемые ИСКЛЮЧИТЕЛЬНО через реактивные коллбэки шины
     public static HorneyMind HorneyCore { get; private set; } = null!;
-    public static IndividualMind PsycheCore { get; private set; } = null!;
+    public static JungMind JungCore { get; private set; } = null!;
     public static AdlerianMind AdlerCore { get; private set; } = null!;
     public static TripartitePsyche FreudCore { get; private set; } = null!;
 
@@ -41,12 +49,12 @@ class Program
         AnsiConsole.Clear();
         AnsiConsole.Write(new FigletText("Reactive PsychOS").Centered().Color(Color.MediumPurple));
         AnsiConsole.MarkupLine("[bold cyan]Запуск 100% событийно-ориентированной архитектуры психики...[/]\n");
-        
+
         //--------------------------------------------------------------------------------------------------------------------
         // 1. Выбор базового режима симуляции
         var simMode = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title("Выберите [bold cyan]начальный режим функционирования[/] рантайма:")
+                .Title("Выберите [bold cyan]начальный режим functioning[/] рантайма:")
                 .PageSize(5)
                 .AddChoices([
                     "Стабильный (Базовые настройки)",
@@ -54,31 +62,32 @@ class Program
                     "Невротический (Критическое отчуждение Я)",
                     "Кастомный (Ручная настройка параметров)"
                 ]));
-        // Инициализация дефолтных параметров
-        var horneySecurity = 75.0;
-        var horneyVitality = 90.0;
-        var horneyAlienation = 12.0;
 
-        var adlerInferiority = 45.0;
-        var adlerSocialInterest = 55.0;
-        AdlerStyle adlerStyle = AdlerStyle.SociallyUseful;
+        // Инициализация дефолтных параметров из конфигурационного манифеста
+        var horneySecurity = PsychicConstants.RuntimePresets.DefaultHorneySecurity;
+        var horneyVitality = PsychicConstants.RuntimePresets.DefaultHorneyVitality;
+        var horneyAlienation = PsychicConstants.RuntimePresets.DefaultHorneyAlienation;
 
-        var freudInitialLibido = 500.0;
-        var freudInitialTension = 15.0;
+        var adlerInferiority = PsychicConstants.RuntimePresets.DefaultAdlerInferiority;
+        var adlerSocialInterest = PsychicConstants.RuntimePresets.DefaultAdlerSocialInterest;
+        AdlerLifeStyle adlerStyle = AdlerLifeStyle.SociallyUseful;
+
+        var freudInitialLibido = PsychicConstants.RuntimePresets.DefaultFreudLibido;
+        var freudInitialTension = PsychicConstants.RuntimePresets.DefaultFreudTension;
 
         // Корректировка параметров на основе выбранного пресета
         switch (simMode)
         {
             case "Пограничный (Повышенное напряжение Id)":
-                freudInitialTension = 65.0;
+                freudInitialTension = PsychicConstants.RuntimePresets.BorderlineFreudTension;
                 break;
 
             case "Невротический (Критическое отчуждение Я)":
-                horneyAlienation = 48.0; // В шаге от Pride Lockout (>50)
-                horneySecurity = 35.0;
-                horneyVitality = 40.0;
-                adlerInferiority = 75.0;
-                adlerStyle = AdlerStyle.Ruling;
+                horneyAlienation = PsychicConstants.RuntimePresets.NeuroticHorneyAlienation;
+                horneySecurity = PsychicConstants.RuntimePresets.NeuroticHorneySecurity;
+                horneyVitality = PsychicConstants.RuntimePresets.NeuroticHorneyVitality;
+                adlerInferiority = PsychicConstants.RuntimePresets.NeuroticAdlerInferiority;
+                adlerStyle = AdlerLifeStyle.Ruling;
                 break;
 
             case "Кастомный (Ручная настройка параметров)":
@@ -86,33 +95,32 @@ class Program
 
                 horneySecurity = AnsiConsole.Prompt(
                     new TextPrompt<double>("Базальная безопасность HorneyOS [green](0-100%)[/]:")
-                        .DefaultValue(75.0)
+                        .DefaultValue(PsychicConstants.RuntimePresets.DefaultHorneySecurity)
                         .ValidationErrorMessage("[red]Введите корректное число процентов![/]")
                         .Validate(n => n is >= 0 and <= 100));
 
                 horneyAlienation = AnsiConsole.Prompt(
                     new TextPrompt<double>("Начальный налог на отчуждение [red](sp/tick)[/]:")
-                        .DefaultValue(12.0));
+                        .DefaultValue(PsychicConstants.RuntimePresets.DefaultHorneyAlienation));
 
                 freudInitialTension = AnsiConsole.Prompt(
                     new TextPrompt<double>("Начальное напряжение катексиса FreudOS [purple](0-100%)[/]:")
-                        .DefaultValue(15.0)
+                        .DefaultValue(PsychicConstants.RuntimePresets.DefaultFreudTension)
                         .Validate(n => n is >= 0 and <= 100));
                 break;
         }
 
         // Инициализируем ядра (они сами подпишутся на шину внутри своих конструкторов!)
         HorneyCore = new HorneyMind(horneySecurity, horneyVitality, horneyAlienation);
-        PsycheCore = new IndividualMind();
+        JungCore = new JungMind();
         AdlerCore = new AdlerianMind(adlerInferiority, adlerSocialInterest, adlerStyle);
         FreudCore = new TripartitePsyche(freudInitialLibido, freudInitialTension);
 
         AnsiConsole.MarkupLine($"\n[bold green] Настройки зафиксированы. Режим: {simMode}.[/]");
-        AnsiConsole.MarkupLine("[bold yellow]Запуск мониторинга через 1.5 секунды...[/]");
-        Thread.Sleep(1500);
+        AnsiConsole.MarkupLine($"[bold yellow]Запуск мониторинга через {PsychicConstants.Simulation.StartupDelayMs / 1000.0:F1} секунды...[/]");
+        Thread.Sleep(PsychicConstants.Simulation.StartupDelayMs);
 
         //---------------------------------------------------------------------------------------------------------
-
 
         string currentFreudLog = "Шина инициализирована. Время движется через импульсы Id.";
         bool globalPanic = false;
@@ -129,32 +137,30 @@ class Program
         AnsiConsole.Live(CreateDashboard(currentFreudLog)).Start(ctx =>
         {
             // Главный цикл симуляции теперь НЕ вызывает методы ядер напрямую. 
-            // Он просто имитирует удары пульса Id (Heartbeat), а рантаймы реагируют реактивно!
-            for (int heartbeat = 1; heartbeat <= 50; heartbeat++)
+            for (int heartbeat = 1; heartbeat <= PsychicConstants.Simulation.TotalHeartbeats; heartbeat++)
             {
                 if (globalPanic) break;
 
-                Thread.Sleep(300);
+                Thread.Sleep(PsychicConstants.Simulation.HeartbeatDelayMs);
 
                 try
                 {
                     // Единственный генератор активности — Id производит влечение.
-                    // Каждые 2 шага пульса прорывается импульс
                     var rand = new Random().Next(100);
-                    IDrive drive = rand > 45 ? new ThanatosDrive() : new ErosDrive();
-                    var defense = rand > 50 ? DefenseMechanism.Repression : DefenseMechanism.Sublimation;
+                    IDrive drive = rand > PsychicConstants.Simulation.ThanatosDriveChanceThreshold ? new ThanatosDrive() : new ErosDrive();
+                    var defense = rand > PsychicConstants.Simulation.RepressionMechanismThreshold ? DefenseMechanism.Repression : DefenseMechanism.Sublimation;
 
                     // Этот метод внутри бросит событие вытеснения в шину, если Superego наложит вето
                     FreudCore.ProcessIdImpulse(drive, defense, out currentFreudLog, heartbeat);
 
-                    // Psychoanalyst и триггер его активации (например, если буфер Тени раздувается больше 5 элементов)
-                    if (PsycheCore.GetShadowBufferString().Split(' ', StringSplitOptions.RemoveEmptyEntries).Length > 5)
+                    // Триггер активации Psychoanalyst на основе вместимости Тени
+                    if (JungCore.GetShadowBufferString().Split(' ', StringSplitOptions.RemoveEmptyEntries).Length > PsychicConstants.Jung.MaxShadowBufferCapacity)
                     {
                         // Аварийное вмешательство аналитика прямо посреди системных пульсаций!
-                        analyst.PerformReflectionTherapy(PsycheCore, HorneyCore, heartbeat);
+                        analyst.PerformReflectionTherapy(JungCore, HorneyCore, heartbeat);
 
                         // Небольшая задержка, чтобы пользователь успел прочитать лог интервенции на дашборде
-                        Thread.Sleep(2000);
+                        Thread.Sleep(PsychicConstants.Simulation.InterventionDelayMs);
                     }
                 }
                 catch (Exception ex) when (ex is LibidoLeakException or ResistanceException)
@@ -185,9 +191,9 @@ class Program
 
         // 🌑 2. ПАНЕЛЬ PSYCHEOS (Реактивная)
         var psycheTable = new Table().NoBorder().AddColumns("Ресурс", "Пул энергии");
-        psycheTable.AddRow("Либидо Эго (Сознание)", $"[yellow]{PsycheCore.EgoLibido:F1} cx[/]");
-        psycheTable.AddRow("Либидо Бессознательного", $"[purple]{PsycheCore.UnconsciousLibido:F1} cx[/]");
-        psycheTable.AddRow("Буфер тени (ShadowDesires)", $"[grey39]{PsycheCore.GetShadowBufferString()}[/]");
+        psycheTable.AddRow("Либидо Эго (Сознание)", $"[yellow]{JungCore.EgoLibido:F1} cx[/]");
+        psycheTable.AddRow("Либидо Бессознательного", $"[purple]{JungCore.UnconsciousLibido:F1} cx[/]");
+        psycheTable.AddRow("Буфер тени (ShadowDesires)", $"[grey39]{JungCore.GetShadowBufferString()}[/]");
 
         // 📉 3. ПАНЕЛЬ ADLEROS (Реактивная)
         var adlerTable = new Table().NoBorder().AddColumns("Метрика", "Показатель");
