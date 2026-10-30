@@ -1,4 +1,5 @@
 ﻿using FreudOS.Core.Drive;
+using DriveType = FreudOS.Core.Drive.DriveType;
 
 namespace FreudOS.Core;
 
