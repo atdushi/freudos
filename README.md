@@ -160,7 +160,7 @@ FreudOS v2.0-reactive (.NET 9.0 / C# 13)
 | **HorneyOS** | `_security` | `%` (Проценты) | `80.0%` | `< 20.0%` (Runtime Panic) |
 | | `_realSelfVitality` | `sp` (Спонтаны) | `100.0 sp` | `0.0 sp` (Деперсонализация) |
 | | `_alienationEnergyCost` | `sp/tick` | `5.0 sp/tick` | `> 50.0 sp/tick` (Pride Lockout) |
-| **PsycheOS** | `Libido` (Ego / Unconscious) | `cx` (Катексисы) | `60.0 / 40.0` | Динамический баланс аффекта |
+| **JungOS** | `Libido` (Ego / Unconscious) | `cx` (Катексисы) | `60.0 / 40.0` | Динамический баланс аффекта |
 | **AdlerOS** | `_inferiorityIndex` | `%` (Проценты) | `45.0%` | `> 70.0%` (Сверхкомпенсация) |
 | **FreudOS** | `_libidoPool` | `cx` (Катексисы) | `500.0 cx` | `0.0 cx` (Ступор Эго) |
 | | `_cathexisTension` | `%` (Напряжение) | `15.0%` | `> 90.0%` (`LibidoLeakException`) |
