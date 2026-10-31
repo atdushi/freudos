@@ -1,6 +1,6 @@
 ﻿using FreudOS.Core;
 
-namespace FreudOS.Jung;
+namespace FreudOS.JungOS;
 
 /// <summary>
 /// Интерфейс для автономных психических комплексов Юнга.

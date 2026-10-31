@@ -1,14 +1,14 @@
 ﻿using FreudOS.Core;
 
-namespace FreudOS.Jung;
+namespace FreudOS.JungOS.Complexes;
 
 public class MotherComplex : IComplexSubscriber
 {
-    private readonly JungMind _mind;
+    private readonly JungianMind _mind;
     
     public string ComplexName => "Mother_Complex";
 
-    public MotherComplex(JungMind mind) => _mind = mind;
+    public MotherComplex(JungianMind mind) => _mind = mind;
 
     public void OnIdImpulseIntercepted(IdImpulseRepressedEvent ev)
     {

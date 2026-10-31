@@ -1,8 +1,10 @@
 ﻿using FreudOS.Core;
 using FreudOS.HorneyOS;
-using FreudOS.Jung;
+using FreudOS.JungOS;
 using Spectre.Console;
 using System.Reflection;
+
+namespace FreudOS;
 
 /// <summary>
 /// Инструмент глубокого анализа и интервенции. 
@@ -13,7 +15,7 @@ public class Psychoanalyst
     /// <summary>
     /// Производит сессию интервенции в реактивное ядро Юнга.
     /// </summary>
-    public void PerformReflectionTherapy(JungMind psycheCore, HorneyMind horneyCore, int currentPulse)
+    public void PerformReflectionTherapy(JungianMind psycheCore, HorneyMind horneyCore, int currentPulse)
     {
         AnsiConsole.MarkupLine($"\n[bold magenta][[Analyst]][/] Инициализация Reflection-интервенции на пульсе {currentPulse}...");
 
@@ -62,8 +64,8 @@ public class Psychoanalyst
 
                     if (egoBackingField != null && uncBackingField != null)
                     {
-                        egoBackingField.SetValue(psycheCore, 60.0);       // Восстанавливаем контроль Эго
-                        uncBackingField.SetValue(psycheCore, 40.0);       // Разгружаем бессознательное
+                        egoBackingField.SetValue(psycheCore, PsychicConstants.Jung.DefaultEgoLibidoTarget);         // Восстанавливаем контроль Эго
+                        uncBackingField.SetValue(psycheCore, PsychicConstants.Jung.DefaultUnconsciousLibidoTarget); // Разгружаем бессознательное
                     }
                 }
 

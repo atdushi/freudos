@@ -1,14 +1,14 @@
 ﻿using FreudOS.Core;
 
-namespace FreudOS.Jung;
+namespace FreudOS.JungOS.Complexes;
 
 public class AnimaProxy : IComplexSubscriber
 {
-    private readonly JungMind _mind;
+    private readonly JungianMind _mind;
 
     public string ComplexName => "Anima_Proxy";
 
-    public AnimaProxy(JungMind mind) => _mind = mind;
+    public AnimaProxy(JungianMind mind) => _mind = mind;
 
     public void OnIdImpulseIntercepted(IdImpulseRepressedEvent ev)
     {

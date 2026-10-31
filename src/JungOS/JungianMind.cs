@@ -1,22 +1,23 @@
 ﻿using FreudOS.Core;
+using FreudOS.JungOS.Complexes;
 
-namespace FreudOS.Jung;
+namespace FreudOS.JungOS;
 
 /// <summary>
 /// Рантайм индивидуальной психики (Юнг). 
 /// Работает на 100% реактивной модели через подписку на системную шину.
 /// </summary>
-public class JungMind
+public class JungianMind
 {
     // Распределение психической энергии (Libido)
-    public double EgoLibido { get; private set; } = 60.0;          // Слой сознания
-    public double UnconsciousLibido { get; private set; } = 40.0;  // Слой бессознательного
+    public double EgoLibido { get; private set; } = PsychicConstants.Jung.DefaultEgoLibidoTarget;
+    public double UnconsciousLibido { get; private set; } = PsychicConstants.Jung.DefaultUnconsciousLibidoTarget;
 
     // Динамический буфер накопления аффектов Личного и Коллективного Бессознательного (Тень)
     private readonly List<string> _shadowDesiresBuffer = new();
     private readonly List<IComplexSubscriber> _complexes = new();
 
-    public JungMind()
+    public JungianMind()
     {
         // Инициализация и регистрация автономных комплексов («созвездий») в ядре
         _complexes.Add(new MotherComplex(this));

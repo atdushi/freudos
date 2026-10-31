@@ -5,7 +5,9 @@ namespace FreudOS.HorneyOS;
 public class HorneyMind
 {
     public double Security { get; private set; }
+
     public double Vitality { get; private set; }
+
     public double AlienationCost { get; private set; }
 
     public HorneyMind(double security, double vitality, double alienationCost)
@@ -18,17 +20,17 @@ public class HorneyMind
         // Каждое вытесненное бессознательное влечение повышает отчужденность и роняет безопасность.
         PsychicDataBus.Instance.Subscribe<IdImpulseRepressedEvent>(ev =>
         {
-            AlienationCost += 1.5;
-            Vitality = Math.Max(0.0, Vitality - (AlienationCost * 0.05));
+            AlienationCost += PsychicConstants.Horney.AlienationIncrementStep;
+            Vitality = Math.Max(0.0, Vitality - (AlienationCost * PsychicConstants.Horney.VitalityDegradationFactor));
 
-            if (AlienationCost > 25.0)
+            if (AlienationCost > PsychicConstants.Horney.AlienationTriggerThreshold)
             {
-                Security = Math.Max(0.0, Security - 2.0);
+                Security = Math.Max(0.0, Security - PsychicConstants.Horney.SecurityDecrementStep);
                 // Публикуем падение безопасности дальше по цепочке — Адлер подхватит!
                 PsychicDataBus.Instance.Publish(new SecurityDroppedEvent(Security));
             }
 
-            if (Security < 20.0)
+            if (Security < PsychicConstants.Horney.SystemPanicThreshold)
             {
                 throw new ResistanceException("Критический уровень базальной тревоги! Рантайм Хорни аварийно остановлен.");
             }

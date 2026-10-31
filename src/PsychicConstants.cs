@@ -1,4 +1,4 @@
-﻿namespace FreudOS.Core
+﻿namespace FreudOS
 {
     /// <summary>
     /// Централизованный манифест констант, пресетов и пороговых значений макро-психики PsychOS.
@@ -57,13 +57,14 @@
         }
 
         /// <summary>
-        /// Параметры реактивного ядра и комплексов Юнга (PsycheOS).
+        /// Параметры реактивного ядра и комплексов Юнга
         /// </summary>
         public static class Jung
         {
             public const double MotherComplexEnergyThreshold = 10.0;
             public const int MaxShadowBufferCapacity = 5;
-            public const double DefaultEgoLibidoTarget = 60.0;
+            public const double DefaultEgoLibidoTarget = 60.0;          // Слой сознания
+            public const double DefaultUnconsciousLibidoTarget = 40.0;  // Слой бессознательного
         }
 
         /// <summary>
@@ -71,9 +72,34 @@
         /// </summary>
         public static class Horney
         {
+            /// <summary>
+            /// Порог падения безопасности (< 65%), генерирующий SecurityDroppedEvent.
+            /// </summary>
             public const double SecurityDroppedThreshold = 65.0;
+
             public const double SystemPanicThreshold = 20.0;
+
             public const double MaxAlienationForIntervention = 50.0;
+
+            /// <summary>
+            /// Шаг прироста налога на отчуждение за каждый подавленный импульс (+1.5).
+            /// </summary>
+            public const double AlienationIncrementStep = 1.5;
+
+            /// <summary>
+            /// Коэффициент деградации жизненной силы от отчуждения (0.05).
+            /// </summary>
+            public const double VitalityDegradationFactor = 0.05;
+
+            /// <summary>
+            /// Порог отчуждения, запускающий деструкцию безопасности (> 25.0).
+            /// </summary>
+            public const double AlienationTriggerThreshold = 25.0;
+
+            /// <summary>
+            /// Шаг падения базальной безопасности при нарушении порогов отчуждения (-2.0).
+            /// </summary>
+            public const double SecurityDecrementStep = 2.0;
         }
 
         /// <summary>
@@ -81,7 +107,15 @@
         /// </summary>
         public static class Adler
         {
-            public const double InferiorityIncrementStep = 15.5;
+            /// <summary>
+            /// Шаг прироста индекса неполноценности при деградации безопасности (+4.0).
+            /// </summary>
+            public const double InferiorityIncrementStep = 4.0;
+
+            /// <summary>
+            /// Шаг падения социального интереса при деградации безопасности (-1.5).
+            /// </summary>
+            public const double SocialInterestDecrementStep = 1.5;
         }
     }
 }

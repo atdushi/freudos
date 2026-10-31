@@ -1,12 +1,12 @@
 ﻿using Spectre.Console;
 using Spectre.Console.Rendering;
-using FreudOS.Jung;
 using FreudOS.AdlerOS;
 using FreudOS.Core;
 using FreudOS.HorneyOS;
 using FreudOS.Core.Drive;
+using FreudOS.JungOS;
 
-namespace FreudOS.Dashboard;
+namespace FreudOS;
 
 /*
 
@@ -40,7 +40,7 @@ class Program
 {
     // Глобальные стейты систем, обновляемые ИСКЛЮЧИТЕЛЬНО через реактивные коллбэки шины
     public static HorneyMind HorneyCore { get; private set; } = null!;
-    public static JungMind JungCore { get; private set; } = null!;
+    public static JungianMind JungCore { get; private set; } = null!;
     public static AdlerianMind AdlerCore { get; private set; } = null!;
     public static TripartitePsyche FreudCore { get; private set; } = null!;
 
@@ -112,7 +112,7 @@ class Program
 
         // Инициализируем ядра (они сами подпишутся на шину внутри своих конструкторов!)
         HorneyCore = new HorneyMind(horneySecurity, horneyVitality, horneyAlienation);
-        JungCore = new JungMind();
+        JungCore = new JungianMind();
         AdlerCore = new AdlerianMind(adlerInferiority, adlerSocialInterest, adlerStyle);
         FreudCore = new TripartitePsyche(freudInitialLibido, freudInitialTension);
 

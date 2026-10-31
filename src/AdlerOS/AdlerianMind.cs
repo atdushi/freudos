@@ -5,7 +5,9 @@ namespace FreudOS.AdlerOS;
 public class AdlerianMind
 {
     public double InferiorityIndex { get; private set; }
+
     public double SocialInterest { get; private set; }
+
     public AdlerLifeStyle CurrentStyle { get; private set; }
 
     public AdlerianMind(double inferiorityIndex, double socialInterest, AdlerLifeStyle currentStyle = AdlerLifeStyle.SociallyUseful)
@@ -17,10 +19,10 @@ public class AdlerianMind
         // Чистая реакция на событие падения безопасности из Хорни
         PsychicDataBus.Instance.Subscribe<SecurityDroppedEvent>(ev =>
         {
-            if (ev.CurrentSecurity < 65.0)
+            if (ev.CurrentSecurity < PsychicConstants.Horney.SecurityDroppedThreshold)
             {
-                InferiorityIndex = Math.Min(100.0, InferiorityIndex + 4.0);
-                SocialInterest = Math.Max(0.0, SocialInterest - 1.5);
+                InferiorityIndex = Math.Min(100.0, InferiorityIndex + PsychicConstants.Adler.InferiorityIncrementStep);
+                SocialInterest = Math.Max(0.0, SocialInterest - PsychicConstants.Adler.SocialInterestDecrementStep);
                 CurrentStyle = AdlerLifeStyle.Ruling;
             }
         });
